@@ -73,7 +73,15 @@ priStudent.say()
 trace( priStudent.constructor.toString() );
 
 
-setTimeout( value=>{
-    alert(value);
-},1.2,['a','b'] );
+let errorlog = "?:95: attempt to index a nil valuestack traceback:?:106: in function <?:103>?:95: in function <?:69>(tail call): ??:1509: in function <?:1508>(tail call): ??:48: in function 'setCurState'?:416: in function 'tryEnterState'?:1826: in function <?:1780>(tail call): ??:48: in function 'setCurState'?:416: in function 'tryEnterState'?:372: in function 'resetSoldierState'?:179: in function 'checkDefendSoldierReach'?:90: in function 'update'?:356: in function 'update'?:257: in function 'update'?:392: in function 'update'?:554: in function 'updateDetailLayer'?:473: in function 'update'?:1191: in function 'update'?:329: in function 'update'?:64: in function <?:58>";
+let reg = /\'(\w+)\'\?\:(\d+)/gm;
 
+let params = [];
+let execRets = reg.exec(errorlog);
+while(execRets)
+{
+    params.push({name:execRets[1],num:execRets[2]});
+    execRets = reg.exec(errorlog);
+}
+
+trace(params.toString());
