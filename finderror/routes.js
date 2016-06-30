@@ -11,12 +11,12 @@ module.exports = function (app)
 {
     app.get('/', function (req, res)
     {
+
         let version = req.query["version"].match(/\d+\.\d+/)[0];
         let errorlog = req.query["errorlog"];
 
         let reg = /\'(\w+)\'\?\:(\d+)/gm;
-        console.log("version ",version);
-        console.log("errorlog ",errorlog);
+        console.log(">>> client Ip %s version %s  errorlog %s",req.ip,version,errorlog);
 
         let params = [];
 
@@ -28,10 +28,18 @@ module.exports = function (app)
         }
 
         findError.search(version, params ,(result)=>{
-            console.log("result ",result);
+            console.log("<<<< result ",result);
             res.write(result);
             res.end();
         })
+
+    });
+
+    app.get('/test', function (req, res)
+    {
+        console.log("client Ip %s",req.ip);
+        res.write("test success!");
+        res.end();
 
     });
 };

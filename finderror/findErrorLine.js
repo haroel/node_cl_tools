@@ -5,7 +5,7 @@ var fs = require("fs");
 
 var path = require("path");
 
-let dir_path = "/Users/howe/Documents/RSLG/branches/branch_0.2.0.";
+let dir_path = "F:\RSLG_branche/branch_0.2.0.";
 
 const ignoreFileFormat = [".svn",".DS_Store",".git"];       // 忽略文件格式
 function isIgnore(files)
@@ -29,6 +29,12 @@ module.exports.search = function ( version, params , finishcallback )
     {
         fs.readdir(dir, function (err, files)
         {
+            if (err || !files)
+            {
+                result += "读取失败:"+dirPath;
+                finish && finish();
+                return;
+            }
             (function next(i)
             {
                 if (i < files.length)
