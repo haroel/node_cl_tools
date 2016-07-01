@@ -23,6 +23,11 @@ function isIgnore(files)
 
 module.exports.search = function ( version, params , finishcallback )
 {
+    if (!params || params.length < 1)
+    {
+        finishcallback("参数错误");
+        return;
+    }
     let result = "";
     let dirPath = dir_path + version + "/Client/Resources/lua";
     function travel(dir, callback, finish)
@@ -31,7 +36,7 @@ module.exports.search = function ( version, params , finishcallback )
         {
             if (err || !files)
             {
-                result += "读取失败:"+dirPath;
+                result += "目录读取失败:"+dirPath;
                 finish && finish();
                 return;
             }

@@ -11,8 +11,15 @@ module.exports = function (app)
 {
     app.get('/', function (req, res)
     {
-
-        let version = req.query["version"].match(/\d+\.\d+/)[0];
+        let version = req.query["version"]; 
+        if (!version)
+        {
+            console.log("<<<< result 访问错误");
+            res.write("访问错误");
+            res.end();
+            return;
+        }
+        version = version.match(/\d+\.\d+/)[0];
         let errorlog = req.query["errorlog"];
 
         let reg = /\'(\w+)\'\?\:(\d+)/gm;
@@ -26,7 +33,6 @@ module.exports = function (app)
             params.push({func:execRets[1],num:execRets[2]});
             execRets = reg.exec(errorlog);
         }
-
         findError.search(version, params ,(result)=>{
             console.log("<<<< result ",result);
             res.write(result);
