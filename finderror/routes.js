@@ -15,7 +15,7 @@ module.exports = function (app)
         if (!version)
         {
             console.log("<<<< result 访问错误");
-            res.write("访问错误");
+            res.write("error !");
             res.end();
             return;
         }

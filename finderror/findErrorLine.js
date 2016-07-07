@@ -25,7 +25,7 @@ module.exports.search = function ( version, params , finishcallback )
 {
     if (!params || params.length < 1)
     {
-        finishcallback("参数错误");
+        finishcallback("param error");
         return;
     }
     let result = "";
@@ -36,7 +36,7 @@ module.exports.search = function ( version, params , finishcallback )
         {
             if (err || !files)
             {
-                result += "目录读取失败:"+dirPath;
+                result += "目录读取失败:"+dirPath + "__" +dir;
                 finish && finish();
                 return;
             }
