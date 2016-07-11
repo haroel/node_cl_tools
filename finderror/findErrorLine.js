@@ -22,24 +22,29 @@ function isIgnore(files)
 
 function loopDir( dir_path, path_arr )
 {
-    let files = fs.readdirSync(dir_path);
-    for (let filename of files)
-    {
-        if (isIgnore(filename) == false)
+    try{
+        let files = fs.readdirSync(dir_path);
+        for (let filename of files)
         {
-            let fPath = path.join(dir_path, filename );
-            let stats = fs.lstatSync( fPath ); // 同步读取文件信息
-            if (stats.isDirectory())
+            if (isIgnore(filename) == false)
             {
-                loopDir( fPath, path_arr )
-            }else
-            {
-                if (path.extname( filename ) === ".lua")
+                let fPath = path.join(dir_path, filename );
+                let stats = fs.lstatSync( fPath ); // 同步读取文件信息
+                if (stats.isDirectory())
                 {
-                    path_arr.push(fPath)
+                    loopDir( fPath, path_arr )
+                }else
+                {
+                    if (path.extname( filename ) === ".lua")
+                    {
+                        path_arr.push(fPath)
+                    }
                 }
             }
         }
+    }catch (error)
+    {
+        console.log(error)
     }
 }
 
@@ -90,6 +95,10 @@ module.exports.search = function ( version, params , finishcallback )
             result+= log;
         }
     };
+    if (result.length < 1)
+    {
+        result = "错误，无法找到出错文件";
+    }
     finishcallback(result);
 };
 
