@@ -5,7 +5,7 @@ var fs = require("fs");
 
 var path = require("path");
 
-let dir_path = "F:\RSLG_branche/branch_0.2.0.";
+let main_dir_path = "F:\\RSLG_branche/branch_0.2.0.";
 
 const ignoreFileFormat = [".svn",".DS_Store",".git"];       // 忽略文件格式
 function isIgnore(files)
@@ -20,6 +20,28 @@ function isIgnore(files)
     return false;
 }
 
+function loopDir( dir_path, path_arr )
+{
+    let files = fs.readdirSync(dir_path);
+    for (let filename of files)
+    {
+        if (isIgnore(filename) == false)
+        {
+            let fPath = path.join(dir_path, filename );
+            let stats = fs.lstatSync( fPath ); // 同步读取文件信息
+            if (stats.isDirectory())
+            {
+                loopDir( fPath, path_arr )
+            }else
+            {
+                if (path.extname( filename ) === ".lua")
+                {
+                    path_arr.push(fPath)
+                }
+            }
+        }
+    }
+}
 
 module.exports.search = function ( version, params , finishcallback )
 {
@@ -29,129 +51,46 @@ module.exports.search = function ( version, params , finishcallback )
         return;
     }
     let result = "";
-    let dirPath = dir_path + version + "/Client/Resources/lua";
-    function travel(dir, callback, finish)
-    {
-        fs.readdir(dir, function (err, files)
-        {
-            if (err || !files)
-            {
-                result += "目录读取失败:"+dirPath + "__" +dir;
-                finish && finish();
-                return;
-            }
-            (function next(i)
-            {
-                if (i < files.length)
-                {
-                    var pathname = path.join(dir, files[i]);
+    let dirPath = main_dir_path + version + "/Client/Resources/lua";
+    let files = [];
+    loopDir(dirPath,files);
+    let __map = new Map();
+    let __num = params.length;
 
-                    fs.stat(pathname, function (err, stats)
+    for (let filePath of files)
+    {
+        let codeContent = fs.readFileSync( filePath,"utf-8");
+        let codeArr = codeContent.split("\n");
+        for(let i = 0;i < codeArr.length;i++)
+        {
+            let lineStr = codeArr[i];
+            lineStr = lineStr.replace(  /(^\s+)|(\s+$)/g,"");
+            if (lineStr.length > 0 && lineStr.indexOf("--") != 0)
+            {
+                for (let j =0 ;j < __num;j++)
+                {
+                    let pObj = params[j];
+                    if (!pObj.did && pObj.num == (i+1) && lineStr.indexOf( pObj.func) >= 0)
                     {
-                        if (stats.isDirectory())
-                        {
-                            travel(pathname, callback, function ()
-                            {
-                                next(i + 1);
-                            });
-                        } else
-                        {
-                            if (path.extname(pathname) === ".lua")
-                            {
-                                fs.readFile( pathname ,"utf-8", (error,codeContent)=>
-                                {
-                                    let codeArr = codeContent.split("\n");
-                                    let hasfind = false;
-                                    for(let i = 0;i < codeArr.length;i++)
-                                    {
-                                        let lineStr = codeArr[i];
-                                        if ( lineStr.length > 0 && (i+1) === parseInt(params[0].num) && lineStr.indexOf(params[0].func) >= 0 )
-                                        {
-                                            result += "错误方法文件位置：" + pathname.split("RSLG")[1] + "\n";
-                                            for (let obj of params)
-                                            {
-                                                result += "function: " + obj.func + "  num:" + obj.num + "\n";
-                                            }
-                                            callback(result);
-                                            hasfind = true;
-                                        }
-                                    }
-                                    if (hasfind)
-                                    {
-                                        trace("hasfind true")
-                                    }
-                                    next(i + 1);
-                                });
-                            }else
-                            {
-                                next(i + 1);
-                            }
-
-                        }
-                    });
-                } else
-                {
-                    finish && finish();
+                        let log = "["+j+"] >>文件路径：<font color='#ff00f0' size = '16'>" + filePath.split("Client")[1] + "</font>\n";
+                           log += "        >> 代码行：<font color='#ff0000' size = '18'>" + pObj.num + "</font> 方法名：<font color='#0000ff'>" + pObj.func +"</font>\n\n";
+                        __map.set(j,log);
+                        pObj.did = true;
+                        break;
+                    }
                 }
-            }(0));
-        });
-    }
-    travel( dirPath, (value)=>
-    {
-        result=value;
-    } , ()=>
-    {
-        if (result.length < 1)
-        {
-            result = "没有找到错误文件";
+            }
         }
-        finishcallback(result);
-    } );
+    }
 
-    //
-    //function doSearch(dir)
-    //{
-    //    trace("dir ",dir);
-    //    let files = fs.readdirSync(dir);
-    //
-    //
-    //    for (let fileName of files)
-    //    {
-    //        if (isIgnore(fileName) == false)
-    //        {
-    //            let fullpath = path.join(dir,fileName);
-    //            fs.stat( fullpath , (err,stats)=> {
-    //                if (stats.isDirectory())
-    //                {
-    //                    doSearch(fullpath);
-    //                }else
-    //                {
-    //                    fs.readFile( fullpath ,"utf-8", (error,codeContent)=>{
-    //                        let codeArr =codeContent.split("\n");
-    //                        trace("行数 ", codeArr.length);
-    //                        for(let i = 0;i < codeArr.length;i++)
-    //                        {
-    //                            let lineStr = codeArr[i];
-    //                            if ( lineStr.length > 0 && (i+1) === params[0].num && lineStr.indexOf(params[0].func) >= 0 )
-    //                            {
-    //                                trace("!!!!! ",fullpath);
-    //                                result += "错误方法文件位置：" + fullpath + "\n";
-    //
-    //                                for (let obj of params)
-    //                                {
-    //                                    result += "function: " + obj.func + "  num:" + obj.num + "\n";
-    //                                }
-    //                                callback(result);
-    //                                return;
-    //                            }
-    //                        }
-    //                    });
-    //                }
-    //            } );
-    //        }
-    //    }
-    //}
-    //doSearch(dirPath);
+    for (let i = 0; i < __num; i++) {
+        let log = __map.get(i);
+        if (log)
+        {
+            result+= log;
+        }
+    };
+    finishcallback(result);
 };
 
 

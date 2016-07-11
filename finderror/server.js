@@ -1,6 +1,6 @@
 var express = require('express');
 var config = require('./config.js');
-
+let path = require("path");
 // 启动服务器
 module.exports.start = function (routes) {
     
@@ -14,7 +14,7 @@ module.exports.start = function (routes) {
         res.header("Content-Type", "application/json;charset=utf-8");
         next();
     });
-    app.use(express.static(__dirname + '/public'));
+    app.use(express.static(path.join(__dirname,'public')));
     var server = app.listen(config.SERVER_PORT,config.SERVER_IP,function (error)
     {
         if (error)

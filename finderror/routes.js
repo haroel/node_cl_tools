@@ -2,6 +2,9 @@
 var config = require('./config.js');
 var url = require("url");
 var querystring = require('querystring');
+var path = require("path");
+
+var fs = require("fs");
 
 var findError = require("./findErrorLine.js");
 
@@ -19,7 +22,16 @@ module.exports = function (app)
             res.end();
             return;
         }
-        version = version.match(/\d+\.\d+/)[0];
+        let matchs = version.match(/\d+\.\d+/);
+        if (!matchs || matchs.length < 1)
+        {
+            console.log("<<<< result 访问错误");
+            res.write("版本号参数错误 !");
+            res.end();
+            return;
+        }
+        version = matchs[0];
+
         let errorlog = req.query["errorlog"];
 
         let reg = /\'(\w+)\'\?\:(\d+)/gm;
@@ -33,6 +45,7 @@ module.exports = function (app)
             params.push({func:execRets[1],num:execRets[2]});
             execRets = reg.exec(errorlog);
         }
+        console.log("参数",params);
         findError.search(version, params ,(result)=>{
             console.log("<<<< result ",result);
             res.write(result);
@@ -47,5 +60,23 @@ module.exports = function (app)
         res.write("test success!");
         res.end();
 
+    });
+
+    app.get('/errorlog', function (req, res)
+    {
+        console.log("client Ip %s",req.ip);
+        let path11 = path.join(__dirname,"public","findError.html")
+        fs.readFile(path11,function(error,data)
+        {
+            if (error)
+            {
+                res.write("read file error");
+                res.end()
+                return;
+            }
+            res.writeHead(200,{'Content-Type':'text/html'});
+            res.write(data)
+            res.end()
+        });
     });
 };
