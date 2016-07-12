@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<cross-domain-policy>
+    <allow-access-from domain="*"  to-port="8000-8999"/>
+</cross-domain-policy>

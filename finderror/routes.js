@@ -34,7 +34,7 @@ module.exports = function (app)
 
         let errorlog = req.query["errorlog"];
 
-        let reg = /\'(\w+)\'\?\:(\d+)/gm;
+        let reg = /\'(\w+)\'\?*\:(\d+)/gm;
         console.log(">>> client Ip %s version %s",req.ip,version);
 
         let params = [];
