@@ -85,3 +85,15 @@ while(execRets)
 }
 
 trace(params.toString());
+
+let _charRequire = `
+    require "lua.modules.herotalent.HeroTalentController"
+`;
+let reqReg0 = /require\s*(\(\".*"\))/g;
+
+let reqReg = /(require\s*)(\".*")/g;
+if (!reqReg0.test(_charRequire))
+{
+    _charRequire = _charRequire.replace( reqReg , '$1($2)' );
+    trace("转换结果",_charRequire);
+}
