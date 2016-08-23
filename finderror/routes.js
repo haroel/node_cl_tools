@@ -22,15 +22,6 @@ module.exports = function (app)
             res.end();
             return;
         }
-        let matchs = version.match(/\d+\.\d+/);
-        if (!matchs || matchs.length < 1)
-        {
-            console.log("<<<< result 访问错误");
-            res.write("版本号参数错误 !");
-            res.end();
-            return;
-        }
-        version = matchs[0];
 
         let errorlog = req.query["errorlog"];
 
@@ -60,6 +51,15 @@ module.exports = function (app)
         res.write("test success!");
         res.end();
 
+    });
+
+    app.get('/versionList', function (req, res)
+    {
+        console.log("client Ip %s",req.ip);
+
+        let list = findError.getVersionList();
+        res.write( JSON.stringify(list) );
+        res.end();
     });
 
     app.get('/errorlog', function (req, res)

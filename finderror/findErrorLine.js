@@ -5,7 +5,7 @@ var fs = require("fs");
 
 var path = require("path");
 
-let main_dir_path = "F:\\RSLG_branche/branch_0.2.0.";
+let main_dir_path = "F:\\RSLG_branche/";
 
 const ignoreFileFormat = [".svn",".DS_Store",".git"];       // 忽略文件格式
 function isIgnore(files)
@@ -103,6 +103,23 @@ module.exports.search = function ( version, params , finishcallback )
 };
 
 
-
+module.exports.getVersionList = function ()
+{
+    let result = [];
+    let files = fs.readdirSync(main_dir_path);
+    for (let filename of files)
+    {
+        if (isIgnore(filename) == false)
+        {
+            let fPath = path.join(main_dir_path, filename );
+            let stats = fs.lstatSync( fPath ); // 同步读取文件信息
+            if (stats.isDirectory())
+            {
+                result.push( filename )
+            }
+        }
+    }
+    return result;
+}
 
 
