@@ -56,21 +56,25 @@ for (let filepath of files)
 
     let codeContent = fs.readFileSync( filepath ,"utf-8");
 
-    let a = codeContent.match(/:retain\(/gm);
-    let b = codeContent.match(/:release\(/gm);
+    let a = codeContent.match(/addView\(\"/gm);
+    let b = codeContent.match(/removeView\(\"/gm);
+    if (!a && !b)
+    {
+        continue;
+    }
     if (!a)
     {
+        console.log("只有removeView，没有addView",filepath)
         continue;
     }
     if (!b)
     {
-        console.log("只有retain，没有release",filepath)
+        console.log("只有addView，没有removeView",filepath)
         continue;
     }
     if (a.length > b.length)
     {
-        console.log("retain与release 数目不对",filepath)
+        console.log("addView于removeView 数目不对",filepath)
     }
 
 }
-

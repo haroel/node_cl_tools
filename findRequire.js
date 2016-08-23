@@ -53,24 +53,22 @@ loopDir( path11,files);
 let num = 0;
 for (let filepath of files)
 {
+    let REG = /(require\s*\(*\")(.*)(\"\)*)/gm
 
     let codeContent = fs.readFileSync( filepath ,"utf-8");
-
-    let a = codeContent.match(/:retain\(/gm);
-    let b = codeContent.match(/:release\(/gm);
-    if (!a)
+    if (REG.test(codeContent))
     {
-        continue;
-    }
-    if (!b)
-    {
-        console.log("只有retain，没有release",filepath)
-        continue;
-    }
-    if (a.length > b.length)
-    {
-        console.log("retain与release 数目不对",filepath)
+        codeContent = codeContent.replace( REG, function ( match, $1,$2,$3 )
+        {
+            let v1 = $2.split(".").join("/");
+            return $1 + v1 + $3;
+        } )
+        fs.writeFileSync( filepath , codeContent );
+        num++;
+        console.log("修改文件",filepath)
     }
 
 }
+
+        console.log("修改文件数目",num)
 
