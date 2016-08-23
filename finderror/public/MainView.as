@@ -14,6 +14,8 @@
 	import flash.events.SecurityErrorEvent;
 	import flash.events.IOErrorEvent;
 	import flash.system.Security;
+	import fl.controls.ComboBox;
+	import fl.data.DataProvider;
 	
 
 	public class MainView extends MovieClip {
@@ -23,7 +25,8 @@
 		public var Text_errorlog:TextArea;
 		public var Text_output:TextArea;
 		public var Text_outputLog:TextArea;
-
+		
+		public var ComboBox_Input:ComboBox;
 		
 		private var jsonObj:Object = null;
 		
@@ -33,13 +36,14 @@
 			jsonLoader.addEventListener(Event.COMPLETE, jsonLoaderComplete);
 			jsonLoader.load(new URLRequest("cc.json"));
 			
-			this.addEventListener(Event.ENTER_FRAME,enterFrameHandler);
+			this.addEventListener(Event.ADDED_TO_STAGE,enterFrameHandler);
 		}
 
 
 		protected function jsonLoaderComplete(event:Event):void
 		{
 			jsonObj = JSON.parse(event.target.data);
+			getVersionList();
 			//new Security
 			//Security.loadPolicyFile("http://192.168.20.5:8080/crossdomain.xml");
 		}
@@ -49,13 +53,56 @@
 		}
 		public function clickHandler(event:MouseEvent):void
 		{
-			trace("click");
-			if (Label_version.text == "" || Text_errorlog.text == "")
+			var obj = ComboBox_Input.selectedItem.label
+			sendText(obj,Text_errorlog.text);
+		}
+		
+		protected function getVersionList( ):void
+		{	
+			var request:URLRequest = new URLRequest();
+				request.url = jsonObj.server + "/versionList";
+				request.method = URLRequestMethod.GET; 
+
+			var loader:URLLoader = new URLLoader();
+				loader.dataFormat = URLLoaderDataFormat.TEXT;
+				loader.addEventListener(Event.COMPLETE, loaderCompleteHandler);
+				loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+				loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);				
+			try
 			{
-				Text_output.text = "版本号或日志不能为空！";
-				return;
+				loader.load(request);
 			}
-			sendText(Label_version.text,Text_errorlog.text);
+			catch (error:Error)
+			{
+				callLog("Unable to load URL");
+			}
+			 
+			function loaderCompleteHandler(e:Event):void
+			{
+				var list:Array = JSON.parse(e.target.data) as Array;
+				list.reverse();
+				var dp:DataProvider = new DataProvider();
+				for (var i:int = 0; i < list.length;i++)
+				{
+					dp.addItem({label:list[i]});
+				}
+				ComboBox_Input.dataProvider = dp;
+				//ComboBox_Input.sortItemsOn("label", Array.NUMERIC);
+
+			}
+			function httpStatusHandler (e:Event):void
+			{
+				callLog("httpStatusHandler:" + e);
+			}
+			function securityErrorHandler (e:Event):void
+			{
+				callLog("securityErrorHandler:" + e);
+			}
+			function ioErrorHandler(e:Event):void
+			{
+				callLog("ioErrorHandler: " + e);
+			}
 		}
 		
 		protected function sendText(version:String,errorlog:String):void
