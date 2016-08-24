@@ -10,7 +10,7 @@
         var SERVERL = "http://192.168.20.5:8080/";
         function loadXMLDoc(url,cfunc)
         {
-            let xmlhttp;
+            var xmlhttp;
             if (window.XMLHttpRequest)
             {// IE7+, Firefox, Chrome, Opera, Safari 代码
                 xmlhttp=new XMLHttpRequest();
@@ -26,7 +26,7 @@
         }
         window.onload=function()
         {
-            let xmlhttp;
+            var xmlhttp;
             // 获取当前的版本号
             function getVersionList()
             {
@@ -34,10 +34,10 @@
                 {
                     if (xmlhttp.status === 200)
                     {
-                        let textStr ="";
-                        let list = JSON.parse(xmlhttp.responseText);
+                        var textStr ="";
+                        var list = JSON.parse(xmlhttp.responseText);
                         list.reverse();
-                        for(let i=0;i<list.length;i++)
+                        for(var i=0;i<list.length;i++)
                         {
                             textStr+= "<option>" + list[i] + "</option>"
                         }
@@ -54,7 +54,7 @@
         function onClickSubmit()
         {
             // AJAX获取http数据
-            let xmlhttp;
+            var xmlhttp;
             function resultHandler()
             {
                 if (xmlhttp.readyState==4)
@@ -68,14 +68,14 @@
                     }
                 }
             }
-            let _version = $("#_comboBox").find("option:selected").text();
-            let _log = document.getElementById("_logInput").value;
+            var _version = $("#_comboBox").find("option:selected").text();
+            var _log = document.getElementById("_logInput").value;
             if (_log == "")
             {
                 alert("请输入错误日志！");
                 return;
             }
-            let _url = SERVERL + "?version="+ _version +"&errorlog=" + _log;
+            var _url = SERVERL + "?version="+ _version +"&errorlog=" + _log;
             xmlhttp = loadXMLDoc( _url, resultHandler)
         }
     </script>
