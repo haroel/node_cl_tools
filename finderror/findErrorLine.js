@@ -77,8 +77,8 @@ module.exports.search = function ( version, params , finishcallback )
                     let pObj = params[j];
                     if (!pObj.did && pObj.num == (i+1) && lineStr.indexOf( pObj.func) >= 0)
                     {
-                        let log = "["+j+"] >>文件路径：<font color='#ff00f0' size = '16'>" + filePath.split("Client")[1] + "</font>\n";
-                           log += "        >> 代码行：<font color='#ff0000' size = '18'>" + pObj.num + "</font> 方法名：<font color='#0000ff'>" + pObj.func +"</font>\n\n";
+                        let log = "["+j+"] >>文件路径：<font color='#ff00f0' size = '10'>" + filePath.split("Client")[1] + "</font>\n";
+                           log += "        >> 代码行：<font color='#ff0000' size = '12'>" + pObj.num + "</font> 方法名：<font color='#0000ff'>" + pObj.func +"</font>\n\n";
                         __map.set(j,log);
                         pObj.did = true;
                         break;

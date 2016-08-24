@@ -65,7 +65,7 @@ module.exports = function (app)
     app.get('/errorlog', function (req, res)
     {
         console.log("client Ip %s",req.ip);
-        let path11 = path.join(__dirname,"public","findError.html")
+        let path11 = path.join(__dirname,"public","main.html")
         fs.readFile(path11,function(error,data)
         {
             if (error)

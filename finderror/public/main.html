@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>查找lua错误</title>
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script>
+        var SERVERL = "http://192.168.20.5:8080/";
+        function loadXMLDoc(url,cfunc)
+        {
+            let xmlhttp;
+            if (window.XMLHttpRequest)
+            {// IE7+, Firefox, Chrome, Opera, Safari 代码
+                xmlhttp=new XMLHttpRequest();
+            }
+            else
+            {// IE6, IE5 代码
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange=cfunc;
+            xmlhttp.open("GET",url,true);
+            xmlhttp.send();
+            return xmlhttp
+        }
+        window.onload=function()
+        {
+            let xmlhttp;
+            // 获取当前的版本号
+            function getVersionList()
+            {
+                if (xmlhttp.readyState && xmlhttp.readyState ===4 )
+                {
+                    if (xmlhttp.status === 200)
+                    {
+                        let textStr ="";
+                        let list = JSON.parse(xmlhttp.responseText);
+                        list.reverse();
+                        for(let i=0;i<list.length;i++)
+                        {
+                            textStr+= "<option>" + list[i] + "</option>"
+                        }
+                        document.getElementById("_comboBox").innerHTML=textStr;
+                    }else
+                    {
+                        alert("服务器连接失败" + SERVERL );
+                    }
+                }
+            }
+            xmlhttp =loadXMLDoc( SERVERL + "versionList", getVersionList)
+        };
+
+        function onClickSubmit()
+        {
+            // AJAX获取http数据
+            let xmlhttp;
+            function resultHandler()
+            {
+                if (xmlhttp.readyState==4)
+                {
+                    if (xmlhttp.status === 200)
+                    {
+                        document.getElementById("output").innerHTML = xmlhttp.responseText;
+                    }else
+                    {
+                        alert("服务器连接失败" + SERVERL );
+                    }
+                }
+            }
+            let _version = $("#_comboBox").find("option:selected").text();
+            let _log = document.getElementById("_logInput").value;
+            if (_log == "")
+            {
+                alert("请输入错误日志！");
+                return;
+            }
+            let _url = SERVERL + "?version="+ _version +"&errorlog=" + _log;
+            xmlhttp = loadXMLDoc( _url, resultHandler)
+        }
+    </script>
+
+    <style>
+        div.container div.row div {
+            margin:20px 0px;
+        }
+        h1
+        {
+            text-align:center;
+        }
+        div.center
+        {
+            text-align:center;
+        }
+        div.right
+        {
+            text-align:right;
+        }
+        .bottom
+        {
+            text-align:right;
+            bottom:0px;
+            color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container center">
+        <div class="row">
+            <div class="col-xs-12 ">
+                <p>查找错误</p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4 center">选择版本号:</div>
+            <div class="col-xs-4 ">
+                <select class="form-control" id="_comboBox">
+                    <option>正在连接</option>
+                </select>
+            </div>
+            <div class="col-xs-4 ">
+                <button type="button" class="btn btn-default" onclick="onClickSubmit()">提交</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4 center">错误日志:</div>
+            <div class="col-xs-8 ">
+                <textarea class="form-control" rows="5" id="_logInput"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4 center">查找结果:</div>
+            <div class="col-xs-8" id="output">
+            </div>
+        </div>
+    </div>
+
+    <p class="bottom">author by howe</p>
+</body>
+</html>
