@@ -12,7 +12,13 @@ var findError = require("./findErrorLine.js");
 // in function 'tryEnterState'?:372: in function 'resetSoldierState'?:179: in function 'checkDefendSoldierReach'?:90: in function 'update'?:356: in function 'update'?:257: in function 'update'?:392: in function 'update'?:554: in function 'updateDetailLayer'?:473: in function 'update'?:1191: in function 'update'?:329: in function 'update'?:64: in function <?:58>
 module.exports = function (app)
 {
-    app.get('/', function (req, res)
+    app.get('/ip', function (req, res)
+    {
+        res.write("IP:" + req.ip);
+        res.end();
+    });
+
+    app.get('/getLog', function (req, res)
     {
         let version = req.query["version"]; 
         if (!version)
@@ -45,15 +51,7 @@ module.exports = function (app)
 
     });
 
-    app.get('/test', function (req, res)
-    {
-        console.log("client Ip %s",req.ip);
-        res.write("test success!");
-        res.end();
-
-    });
-
-    app.get('/versionList', function (req, res)
+    app.get('/getVersionList', function (req, res)
     {
         console.log("client Ip %s",req.ip);
 

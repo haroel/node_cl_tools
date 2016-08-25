@@ -7,10 +7,9 @@
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script>
-        var SERVERL = "http://192.168.20.5:8080/";
+        var xmlhttp;
         function loadXMLDoc(url,cfunc)
         {
-            var xmlhttp;
             if (window.XMLHttpRequest)
             {// IE7+, Firefox, Chrome, Opera, Safari 代码
                 xmlhttp=new XMLHttpRequest();
@@ -22,11 +21,9 @@
             xmlhttp.onreadystatechange=cfunc;
             xmlhttp.open("GET",url,true);
             xmlhttp.send();
-            return xmlhttp
         }
         window.onload=function()
         {
-            var xmlhttp;
             // 获取当前的版本号
             function getVersionList()
             {
@@ -48,13 +45,12 @@
                     }
                 }
             }
-            xmlhttp =loadXMLDoc( SERVERL + "versionList", getVersionList)
+            loadXMLDoc( "getVersionList", getVersionList)
         };
 
         function onClickSubmit()
         {
             // AJAX获取http数据
-            var xmlhttp;
             function resultHandler()
             {
                 if (xmlhttp.readyState==4)
@@ -66,6 +62,7 @@
                     {
                         alert("服务器连接失败" + SERVERL );
                     }
+                    document.getElementById("submitBtn").className = "btn btn-primary";
                 }
             }
             var _version = $("#_comboBox").find("option:selected").text();
@@ -75,26 +72,19 @@
                 alert("请输入错误日志！");
                 return;
             }
-            var _url = SERVERL + "?version="+ _version +"&errorlog=" + _log;
-            xmlhttp = loadXMLDoc( _url, resultHandler)
+            document.getElementById("submitBtn").className = "btn disabled";
+
+            var _url = "getLog?version="+ _version +"&errorlog=" + _log;
+            loadXMLDoc( _url, resultHandler)
         }
     </script>
-
     <style>
         div.container div.row div {
             margin:20px 0px;
         }
-        h1
-        {
-            text-align:center;
-        }
         div.center
         {
             text-align:center;
-        }
-        div.right
-        {
-            text-align:right;
         }
         .bottom
         {
@@ -121,7 +111,7 @@
                 </select>
             </div>
             <div class="col-xs-4 ">
-                <button type="button" class="btn btn-default" onclick="onClickSubmit()">提交</button>
+                <button id="submitBtn" type="button" class="btn btn-primary" onclick="onClickSubmit()">提交</button>
             </div>
         </div>
     </div>
@@ -141,6 +131,6 @@
         </div>
     </div>
 
-    <p class="bottom">author by howe</p>
+    <p class="bottom">power by howe</p>
 </body>
 </html>
