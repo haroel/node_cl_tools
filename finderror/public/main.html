@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="http://cdn.bootcss.com/Base64/1.0.0/base64.min.js"></script>
     <script>
         var xmlhttp;
         function loadXMLDoc(url,cfunc)
@@ -72,6 +73,7 @@
                 alert("请输入错误日志！");
                 return;
             }
+            _log = btoa(_log);// Base64
             document.getElementById("submitBtn").className = "btn disabled";
 
             var _url = "getLog?version="+ _version +"&errorlog=" + _log;
