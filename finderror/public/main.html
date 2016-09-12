@@ -37,7 +37,6 @@
                 alert("请输入错误日志！");
                 return;
             }
-<<<<<<< HEAD
             $("#submitBtn")[0].className = "btn disabled";
             var _version = $("#_comboBox").find("option:selected").text();
             $.ajax( "getLog",
@@ -48,11 +47,6 @@
                     }).done (function(data)
             {
                 $("#output").html( xmlhttp.responseText );
-=======
-            _log = btoa(_log);// Base64
-            document.getElementById("submitBtn").className = "btn disabled";
->>>>>>> origin/master
-
             }).fail(function(xhr, status)
                     {
                         $("#output").html( "处理失败 status:" + status );
