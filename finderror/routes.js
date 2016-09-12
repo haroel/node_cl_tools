@@ -8,6 +8,25 @@ var fs = require("fs");
 
 var findError = require("./findErrorLine.js");
 
+
+function getNowFormatDate() {
+    let date = new Date();
+    let seperator1 = "-";
+    let seperator2 = ":";
+    let month = date.getMonth() + 1;
+    let strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    let currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+    return currentdate;
+}
+
 //?:95: attempt to index a nil valuestack traceback:?:106: in function <?:103>?:95: in function <?:69>(tail call): ??:1509: in function <?:1508>(tail call): ??:48: in function 'setCurState'?:416: in function 'tryEnterState'?:1826: in function <?:1780>(tail call): ??:48: in function 'setCurState'?:416:
 // in function 'tryEnterState'?:372: in function 'resetSoldierState'?:179: in function 'checkDefendSoldierReach'?:90: in function 'update'?:356: in function 'update'?:257: in function 'update'?:392: in function 'update'?:554: in function 'updateDetailLayer'?:473: in function 'update'?:1191: in function 'update'?:329: in function 'update'?:64: in function <?:58>
 module.exports = function (app)
@@ -29,10 +48,9 @@ module.exports = function (app)
             return;
         }
 
-        let errorlog = req.query["errorlog"];
-
+        let errorlog = new Buffer(req.query["errorlog"], 'base64').toString();
         let reg = /\'(\w+)\'\?*\:(\d+)/gm;
-        console.log(">>> client Ip %s version %s",req.ip,version);
+        console.log("\n >>> client Ip %s version %s Time: %s",req.ip,version , getNowFormatDate());
 
         let params = [];
 

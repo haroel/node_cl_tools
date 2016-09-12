@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="http://cdn.bootcss.com/Base64/1.0.0/base64.min.js"></script>
     <script>
         window.onload=function()
         {
@@ -36,6 +37,7 @@
                 alert("请输入错误日志！");
                 return;
             }
+<<<<<<< HEAD
             $("#submitBtn")[0].className = "btn disabled";
             var _version = $("#_comboBox").find("option:selected").text();
             $.ajax( "getLog",
@@ -46,6 +48,10 @@
                     }).done (function(data)
             {
                 $("#output").html( xmlhttp.responseText );
+=======
+            _log = btoa(_log);// Base64
+            document.getElementById("submitBtn").className = "btn disabled";
+>>>>>>> origin/master
 
             }).fail(function(xhr, status)
                     {
