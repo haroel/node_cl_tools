@@ -61,7 +61,6 @@ module.exports.search = function ( version, params , finishcallback )
     loopDir(dirPath,files);
     let __map = new Map();
     let __num = params.length;
-
     for (let filePath of files)
     {
         let codeContent = fs.readFileSync( filePath,"utf-8");
@@ -102,6 +101,100 @@ module.exports.search = function ( version, params , finishcallback )
     finishcallback(result);
 };
 
+
+
+module.exports.search2 = function ( version, params  )
+{
+    let handler = function (resolve, reject)
+    {
+        console.log("dostart")
+        if (!params || params.length < 1)
+        {
+            reject("param error");
+        }else
+        {
+            let dirPath = main_dir_path + version + "/Client/Resources/lua";
+            let files = [];
+            loopDir(dirPath,files);
+            let __map = new Map();
+            let __num = params.length;
+            console.log("文件总数：",files.length)
+
+            function * getFilePath()
+            {
+                let i =0;
+                while (i < files.length)
+                {
+                    yield files[i];
+                    i++
+                }
+            }
+            let fp = getFilePath();
+
+            function doLoop()
+            {
+                let info = fp.next();
+                if (!info.done)
+                {   
+                    let filePath = info.value;
+                    fs.readFile( filePath ,"utf8",function(err , codeContent )
+                    {
+                        if (err)
+                        {
+                            console.log("文件读取失败" + filePath);
+                        }
+                        else
+                        {
+                            let codeArr = codeContent.split("\n");
+                            for(let i = 0;i < codeArr.length;i++)
+                            {
+                                let lineStr = codeArr[i];
+                                lineStr = lineStr.replace(  /(^\s+)|(\s+$)/g,"");
+                                if (lineStr.length > 0 && lineStr.indexOf("--") != 0)
+                                {
+                                    for (let j =0 ;j < __num;j++)
+                                    {
+                                        let pObj = params[j];
+                                        if (!pObj.did && pObj.num == (i+1) && lineStr.indexOf( pObj.func) >= 0)
+                                        {
+                                            let log = "<p>["+j+"] >>文件路径：<font color='#ff00f0'>" + filePath.split("Client")[1] + "</font><br>";
+                                               log += "        >> 代码行：<font color='#ff0000'>" + pObj.num + "</font> 方法名：<font color='#0000ff'>" + pObj.func +"</font></p><br>";
+                                            __map.set(j,log);
+                                            pObj.did = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        doLoop();
+                    } );
+                }else
+                {
+                    let result = "";
+                    for (let i = 0; i < __num; i++) 
+                    {
+                        let log = __map.get(i);
+                        if (log)
+                        {
+                            result+= log;
+                        }
+                    };
+                    if (result.length < 1)
+                    {
+                        result = "错误，无法找到出错文件";
+                    }
+                    resolve(result);
+                }
+            }
+
+            doLoop();
+        }
+    }
+
+    return new Promise(handler)
+
+};
 
 module.exports.getVersionList = function ()
 {

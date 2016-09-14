@@ -61,7 +61,24 @@ module.exports = function (app)
             execRets = reg.exec(errorlog);
         }
         console.log("参数",params);
+                let t1 = Date.now();
+        // Promise + generator ES6写法
+        // findError.search2(version, params)
+        // .then(function(result)
+        // {
+        //     console.log("查询时间",Date.now()-t1)
+        //     console.log("<<<< result ",result);
+        //     res.write(result);
+        //     res.end();
+        // })
+        // .catch(function (error)
+        // {
+        //     console.log("<<<< error result ",error);
+        //     res.write(error);
+        //     res.end();
+        // })
         findError.search(version, params ,(result)=>{
+            console.log("查询时间",Date.now()-t1)
             console.log("<<<< result ",result);
             res.write(result);
             res.end();
