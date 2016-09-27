@@ -108,6 +108,7 @@ function searchCode( version , str , lineNum )
     let dirPath = main_dir_path + version + "/Client/Resources/lua";
     let files = [];
     loopDir(dirPath,files);
+    let reg = new RegExp(str);
     for (let file of files)
    {
         let codeContent = fs.readFileSync(file,"utf8");
@@ -119,7 +120,7 @@ function searchCode( version , str , lineNum )
             lineStr = lineStr.replace(  /(^\s+)|(\s+$)/g,"");
             if (lineStr.length > 0 && lineStr.indexOf("--") != 0)
             {
-                if (i == (lineNum-1) &&　lineStr.indexOf(str)>=0)
+                if (i == (lineNum-1) &&　lineStr.search(reg)>=0)
                 {
                     result += file.split("Client")[1] +"<br>";
                 }

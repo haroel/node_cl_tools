@@ -49,7 +49,7 @@ module.exports = function (app)
         }
 
         let errorlog = new Buffer(req.query["errorlog"], 'base64').toString();
-        let reg = /\'(\w+)\'\?*\:(\d+)/gm;
+        let reg = /\'(\S+)\'\?*\:(\d+)/gm;
         console.log("\n >>> client Ip %s version %s Time: %s",req.ip,version , getNowFormatDate());
 
         let params = [];
