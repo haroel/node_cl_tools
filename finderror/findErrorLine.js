@@ -102,6 +102,34 @@ module.exports.search = function ( version, params , finishcallback )
 };
 
 
+function searchCode( version , str , lineNum )
+{
+    let result = "";
+    let dirPath = main_dir_path + version + "/Client/Resources/lua";
+    let files = [];
+    loopDir(dirPath,files);
+    for (let file of files)
+   {
+        let codeContent = fs.readFileSync(file,"utf8");
+
+        let codeArr = codeContent.split("\n");
+        for(let i = 0;i < codeArr.length;i++)
+        {
+            let lineStr = codeArr[i];
+            lineStr = lineStr.replace(  /(^\s+)|(\s+$)/g,"");
+            if (lineStr.length > 0 && lineStr.indexOf("--") != 0)
+            {
+                if (i == (lineNum-1) &&　lineStr.indexOf(str)>=0)
+                {
+                    result += file.split("Client")[1] +"<br>";
+                }
+            }
+        }
+   }
+   return result;
+}
+
+//console.log( searchCode("branch_0.2.0.41.0","pairs",339) )
 
 module.exports.search2 = function ( version, params  )
 {
@@ -118,6 +146,11 @@ module.exports.search2 = function ( version, params  )
             loopDir(dirPath,files);
             let __map = new Map();
             let __num = params.length;
+            if (__num == 1)
+            {
+                resolve( searchCode( version,params[0].func, params[0].num  ) )
+                return;
+            }
             console.log("文件总数：",files.length)
 
             function * getFilePath()
