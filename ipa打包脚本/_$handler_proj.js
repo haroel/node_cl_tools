@@ -176,8 +176,11 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 			}
 		}else
 		{
-	        trace("ipa 包已全部生成完毕！\n打包总耗时: "+ Math.floor( (Date.now() - gT1)/(1000 * 60) ) + "分钟\n");
+			let notificationStr = "：）Success！ " + fullVersion +" ipa包已全部生成完毕！\n 打包耗时: " + Math.floor( (Date.now() - gT1)/(1000 * 60) ) + "分钟\n";
+	        trace(notificationStr);
 	        exec("open " + output_path);
+
+			exec(`osascript -e 'display notification "${notificationStr}" with title "ipa 已构建完毕"'`)
 	        require("./_$uploadDSYMToBugly.js").Upload( path.join(build_path ,"RSLG_dist.app.dSYM" ) , PACKAGE_NAME , exeVersion );
 		}
 	}

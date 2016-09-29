@@ -71,10 +71,10 @@ function generalArchive( xcodeproj_fullpath , targetName , configuration , outpu
 	        trace("Xcodebuild is running！");
 	    });
 	    free.stderr.on('data', function (data) {
-	        // trace('standard error output:\n' + data);
+	        trace('standard error output:\n' + data);
 	    });
 	    free.on('exit', function (code, signal) {
-	        trace('child process eixt ,exit:' + code);
+	        // trace('child process eixt ,exit:' + code);
 	        let flag = true;
 			try
 			{
@@ -109,10 +109,10 @@ function exportToIpa( targetName , ipa_path , app_path )
 	    trace("导出ipa包 " + ipa_path + " begin")
 	    let free = spawn('xcrun', params);
 	    free.stdout.on('data', function (data) {
-	        trace(" " + data);
+	        // trace( data);
 	    });
 	    free.stderr.on('data', function (data) {
-	    	// trace('standard error output:\n' + data);
+	    	trace('standard error output:\n' + data);
 	    	isSuccess = false;
 	    });
 	    free.on('exit', function (code, signal) {

@@ -9,23 +9,24 @@ var spawn = child_process.spawn;
 let jarPath = path.join( __dirname , "__buglySymboliOS2", "buglySymboliOS.jar");
 let settingPath = path.join( __dirname , "__buglySymboliOS2", "settings.txt");
 
-let settingContent = fs.readFileSync( settingPath,"utf-8");
-let reg = /\b(\w+)\b\=(.+)/gm;
-let settingMap = new Map();
-while(true)
-{
-    let matches = reg.exec(settingContent);
-    if (!matches)
-    {
-        break;
-    }
-    settingMap.set(matches[1],matches[2]);
-}
-
 module.exports.Upload = function ( dsymPath , packageName , version )
 {
-    console.log("\n上传dsym 到bugly后台 " + dsymPath );
-    console.log("\nbugly参数",settingMap);
+
+    let settingContent = fs.readFileSync( settingPath,"utf-8");
+    let reg = /\b(\w+)\b\=(.+)/gm;
+    let settingMap = new Map();
+    while(true)
+    {
+        let matches = reg.exec(settingContent);
+        if (!matches)
+        {
+            break;
+        }
+        settingMap.set(matches[1],matches[2]);
+    }
+
+    console.log("\n 上传iOS dsym符号表到bugly后台 " + dsymPath );
+    console.log("\n bugly参数",settingMap);
 
     // cd /Users/batman/Downloads/buglySymboliOS
     // java -jar buglySymboliOS.jar -i /Users/batman/Desktop/test.app.dSYM
