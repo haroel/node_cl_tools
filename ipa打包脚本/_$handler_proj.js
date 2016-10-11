@@ -1,6 +1,12 @@
 'use strict';
 // 处理工程
 
+const FTP_SERVER = {
+	    host: "192.168.60.13",
+	    user: "moonton",
+	    password: "moonton123"
+	};
+
 var ipa_build_core = require("./_$ipa_build_core.js")
 
 var fs = require('fs');
@@ -87,6 +93,7 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 
 	let resIos_content = fs.readFileSync( configLuaPath ,"utf-8");
 
+	let ipa_file_paths = [];
 	let fullVersion = "";
 	let exeVersion = "";
 	let buildVersion = build_Version;
@@ -150,12 +157,14 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 		    let targetName = info.targetName
     		let ipa_path = output_path + "/" + info.ipa_pre_name + fullVersion + '.ipa';
     		let app_path = build_path + "/" + targetName +".app";
+
 			if (info.need_clean == true )
 		    {
 		    	ipa_build_core.buildWithClean( xcodeproj_fullpath , targetName , configuration ,
 		    			 output_path , app_path , ipa_path)
 		    	.then(function()
 		    	{
+		    		ipa_file_paths.push( ipa_path );
 		    		doIndex();
 		    	})
 		    	.catch(function(error)
@@ -167,6 +176,7 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 				ipa_build_core.build( xcodeproj_fullpath , targetName , configuration , output_path , app_path , ipa_path)
 		    	.then(function()
 		    	{
+		    		ipa_file_paths.push( ipa_path );
 		    		doIndex();
 		    	})
 		    	.catch(function(error)
@@ -182,8 +192,41 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 
 			exec(`osascript -e 'display notification "${notificationStr}" with title "ipa 已构建完毕"'`)
 	        require("./_$uploadDSYMToBugly.js").Upload( path.join(build_path ,"RSLG_dist.app.dSYM" ) , PACKAGE_NAME , exeVersion );
+
+			uploadIPAToFTPServer(ipa_file_paths);
 		}
 	}
 	resetAllInfoPlist(  path.join(dirname, PROJECT_DIR_NAME)  , exeVersion , buildVersion);
 	doIndex();
+}
+
+function uploadIPAToFTPServer( files)
+{
+	trace("\n ********************************************** 上传ipa文件到 ftp **********************************************", FTP_SERVER, files, "\n");
+	// 使用ftp模块上传ipa到ftp服务器
+	let Client = null;
+	try {
+		let Client = require('ftp');
+		for (let filepath of files)
+		{
+			let ftp = new Client();
+			ftp.on('ready', function() 
+				{
+					let fileName = path.basename(filepath);
+			    	ftp.put(filepath, fileName, function(err)
+			    	{
+				      	if (err) 
+			      	    {
+			      	    	trace(err);
+			      	    }
+				        ftp.end();
+			    	});
+			    });
+			ftp.connect(FTP_SERVER);
+		}
+	}catch(e)
+	{
+		trace(e);
+	}
+
 }

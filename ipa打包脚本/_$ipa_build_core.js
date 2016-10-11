@@ -26,7 +26,7 @@ function cleanXcodeTarget( xcodeproj_fullpath , targetName , configuration )
 	    let free = spawn('xcodebuild', params);
 	    // 捕获标准输出并将其打印到控制台
 	    free.stdout.on('data', function (data) {
-	        // console.log(' ' + data);
+	         trace('-' + data);
 	    });
 	    // 捕获标准错误输出并将其打印到控制台
 	    free.stderr.on('data', function (data) {
@@ -63,18 +63,13 @@ function generalArchive( xcodeproj_fullpath , targetName , configuration , outpu
 	    ];
 	    let free = spawn('xcodebuild', params);
 	    free.stdout.on('data', function (data) {
-	        if (data.indexOf("SUCCEEDED") > 1)
-	        {
-	            trace("-" + data);
-	            return;
-	        }
-	        trace("Xcodebuild is running！");
+	        trace("-" + data);
 	    });
 	    free.stderr.on('data', function (data) {
-	        trace('standard error output:\n' + data);
+	        trace('error output:\n' + data);
 	    });
 	    free.on('exit', function (code, signal) {
-	        // trace('child process eixt ,exit:' + code);
+	        // 判断是否存在.app文件，否则本次构建失败
 	        let flag = true;
 			try
 			{
@@ -109,7 +104,7 @@ function exportToIpa( targetName , ipa_path , app_path )
 	    trace("导出ipa包 " + ipa_path + " begin")
 	    let free = spawn('xcrun', params);
 	    free.stdout.on('data', function (data) {
-	        // trace( data);
+	        trace( "-" + data);
 	    });
 	    free.stderr.on('data', function (data) {
 	    	trace('standard error output:\n' + data);
@@ -164,7 +159,7 @@ module.exports.buildWithClean = function ( xcodeproj_fullpath , targetName , con
 
 
 module.exports.build = function ( xcodeproj_fullpath , targetName , configuration ,
-										   output_dir, app_path , ipa_path   )
+										   output_dir, app_path , ipa_path )
 {
 	let handler = function (resolve, reject)
 	{
