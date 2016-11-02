@@ -170,6 +170,7 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 		    	.catch(function(error)
 		    	{
 		    		trace("打包错误" +error);
+		    		throw new Error("打包错误" +error);
 		    	})
 		    }else
 			{
@@ -182,6 +183,7 @@ module.exports.handler = function ( targetConfigDatas , PROJECT_DIR_NAME, XCODE_
 		    	.catch(function(error)
 		    	{
 		    		trace("打包错误" +error);
+		    	    throw new Error("打包错误" +error);
 		    	})
 			}
 		}else
